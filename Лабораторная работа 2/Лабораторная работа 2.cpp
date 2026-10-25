@@ -10,7 +10,7 @@ int main()
 
 	int Method = 0, Mode = 0;
 	string line;
-	double x, eps;
+	double x, eps, y;
 	int k;
 
 	cout << "Выберите метод вычисления: \n" <<
@@ -90,6 +90,14 @@ int main()
 			cout << "\nОшибка ввода!" << endl;
 			cout << "\nВведите погрешность eps: ";
 		}
+		
+		double u = x;
+		int n = 1;
+		while (fabs(u) > eps) {
+			y += u;
+			u *= (x * x * (2.0 * n - 1) * (2.0 * n - 1)) / ((2.0 * n) * (2.0 * n + 1.0));
+			n++;
+		}
 			break;
 
 	case 2:
@@ -109,10 +117,17 @@ int main()
 			cout << "\nОшибка ввода!" << endl;
 			cout << "\nВведите погрешность eps: ";
 		}
+		
+		double u = x;
+		for (int n = 1; n <= k; ++n) {
+			y += u;
+			u *= (x * x * (2.0 * n - 1) * (2.0 * n - 1)) / ((2.0 * n) * (2.0 * n + 1.0));
+		}
 			break;
 
 	case 3:
 		cout << "Метод 3";
+		y = asin(x);
 		break;
 
 	default:
@@ -123,12 +138,12 @@ int main()
 	{
 	case 1:
 		cout << "Режим 1";
-		cout << defaultfloat << setprecision(6) << y_eps << '\n'; // В скобках указать число цыфр до запятой
+		cout << defaultfloat << setprecision(6) << y << '\n'; // В скобках указать число цыфр до запятой
 		break;
 
 	case 2:
 		cout << "Режим 2";
-		cout << fixed << setprecision(3) << y_eps << '\n'; // В скобках указать число цыфр после запятой
+		cout << fixed << setprecision(Mode) << y << '\n'; // В скобках указать число цыфр после запятой
 		break;
 
 	default:
