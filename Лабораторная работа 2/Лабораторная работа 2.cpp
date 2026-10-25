@@ -1,6 +1,7 @@
 ﻿#include <iostream>
 #include <sstream>
 #include <iomanip>
+#include <cmath>
 
 using namespace std;
 
@@ -10,8 +11,8 @@ int main()
 
 	int Method = 0, Mode = 0;
 	string line;
-	double x, eps, y;
-	int k;
+	double x, eps, y = 0.0, u;
+	int k, prec;
 
 	cout << "Выберите метод вычисления: \n" <<
 		"1. С заданной погрешностью eps \n" <<
@@ -25,7 +26,7 @@ int main()
 
 		if (ss >> Method)
 		{
-			if (ss.eof())
+			if (ss.eof() && (Method >= 1 && Method <= 3))
 			{
 				break;
 			}
@@ -34,7 +35,7 @@ int main()
 		cout << "\nМетод: ";
 	}
 
-	cout << "Выберите режим отображения чисел с плавающей точкой: \n" <<
+	cout << "\nВыберите режим отображения чисел с плавающей точкой: \n" <<
 		"1. Вывести целиком \n" <<
 		"2. Фиксированное число цыфр после запятой \n" <<
 		"\nРежим: ";
@@ -45,7 +46,7 @@ int main()
 
 		if (ss >> Mode)
 		{
-			if (ss.eof())
+			if (ss.eof() && (Mode >= 1 && Mode <= 2))
 			{
 				break;
 			}
@@ -54,7 +55,7 @@ int main()
 		cout << "\nРежим: ";
 	}
 
-	cout << "Введите Х: \n";
+	cout << "\nВведите Х (X < 1): ";
 	
 	while (getline(cin, line))
 	{
@@ -64,71 +65,81 @@ int main()
 		{
 			if (ss.eof())
 			{
-				break;
+				if (fabs(x) < 1)
+				{
+					u = x;
+					break;
+				}
 			}
 		}
-		cout << "\nОшибка ввода!" << endl;
-		cout << "\nВведите Х: ";
+		cout << "\nОшибка! Модуль X должен быть меньше 1." << endl;
+		cout << "\nВведите Х (X < 1): ";
 	}
 
 	switch (Method)
 	{
-	case 1:
-		cout << "Введите eps: \n";
-
-		while (getline(cin, line))
+	case 1: 
 		{
-			stringstream ss(line);
+			cout << "\nВведите eps (eps > 0): ";
 
-			if (ss >> eps)
+			while (getline(cin, line))
 			{
-				if (ss.eof())
+				stringstream ss(line);
+
+				if (ss >> eps)
 				{
-					break;
+					if (ss.eof())
+					{
+						if (eps > 0)
+						{
+							break;
+						}
+					}
 				}
+				cout << "\nОшибка ввода!" << endl;
+				cout << "\nВведите погрешность eps: ";
 			}
-			cout << "\nОшибка ввода!" << endl;
-			cout << "\nВведите погрешность eps: ";
+
+			int n = 1;
+			while (fabs(u) > eps) {
+				y += u;
+				u *= (x * x * (2.0 * n - 1) * (2.0 * n - 1)) / ((2.0 * n) * (2.0 * n + 1.0));
+				n++;
+			}
+			break;
+		}
+
+	case 2: 
+		{
+			cout << "\nВведите число чисел ряда k (k >= 1): ";
+
+			while (getline(cin, line))
+			{
+				stringstream ss(line);
+
+				if (ss >> k)
+				{
+					if (ss.eof() && k > 0)
+					{
+						break;
+					}
+				}
+				cout << "\nОшибка ввода!" << endl;
+				cout << "\nВведите число ряда k (k >= 1): ";
+			}
+			for (int n = 1; n <= k; ++n) {
+				y += u;
+				u *= (x * x * (2.0 * n - 1) * (2.0 * n - 1)) / ((2.0 * n) * (2.0 * n + 1.0));
+			}
+			break;
 		}
 		
-		double u = x;
-		int n = 1;
-		while (fabs(u) > eps) {
-			y += u;
-			u *= (x * x * (2.0 * n - 1) * (2.0 * n - 1)) / ((2.0 * n) * (2.0 * n + 1.0));
-			n++;
-		}
-			break;
-
-	case 2:
-		cout << "Введите число чисел ряда k: \n";
-
-		while (getline(cin, line))
-		{
-			stringstream ss(line);
-
-			if (ss >> k)
-			{
-				if (ss.eof())
-				{
-					break;
-				}
-			}
-			cout << "\nОшибка ввода!" << endl;
-			cout << "\nВведите погрешность eps: ";
-		}
-		
-		double u = x;
-		for (int n = 1; n <= k; ++n) {
-			y += u;
-			u *= (x * x * (2.0 * n - 1) * (2.0 * n - 1)) / ((2.0 * n) * (2.0 * n + 1.0));
-		}
-			break;
 
 	case 3:
-		cout << "Метод 3";
-		y = asin(x);
-		break;
+		{
+			y = asin(x);
+			break;
+		}
 
 	default:
 		break;
@@ -137,13 +148,28 @@ int main()
 	switch (Mode)
 	{
 	case 1:
-		cout << "Режим 1";
-		cout << defaultfloat << setprecision(6) << y << '\n'; // В скобках указать число цыфр до запятой
+		cout << "\nY = " << defaultfloat << setprecision(17) << y << '\n'; // Общее колличесвто цифр
 		break;
 
 	case 2:
-		cout << "Режим 2";
-		cout << fixed << setprecision(Mode) << y << '\n'; // В скобках указать число цыфр после запятой
+		cout << "\nВведите количество знаков после запятой: ";
+
+		while (getline(cin, line))
+		{
+			stringstream ss(line);
+
+			if (ss >> prec)
+			{
+				if (ss.eof() && prec >= 0)
+				{
+					break;
+				}
+			}
+			cout << "\nОшибка ввода!" << endl;
+			cout << "\nВведите количество знаков после запятой: ";
+		}
+
+		cout << "\nY = " << fixed << setprecision(prec) << y << '\n'; // В скобках указать число цыфр после запятой
 		break;
 
 	default:
