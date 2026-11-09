@@ -100,9 +100,12 @@ int main()
 				cout << "\nВведите погрешность eps: ";
 			}
 
+			y = x;
 			int n = 1;
-			while (fabs(u) > eps) {
+			u = x * (x * x * (2.0 * n - 1) * (2.0 * n - 1)) / ((2.0 * n) * (2.0 * n + 1.0));
+			while (fabs(u) > eps * (1 - x * x)) {
 				y += u;
+				n++;
 				u *= (x * x * (2.0 * n - 1) * (2.0 * n - 1)) / ((2.0 * n) * (2.0 * n + 1.0));
 				n++;
 			}
@@ -148,7 +151,7 @@ int main()
 	switch (Mode)
 	{
 	case 1:
-		cout << "\nY = " << defaultfloat << setprecision(17) << y << '\n'; // Общее колличесвто цифр
+		cout << "\nY = " << defaultfloat << setprecision(17) << y << '\n'; // Общее колличество цифр
 		break;
 
 	case 2:
